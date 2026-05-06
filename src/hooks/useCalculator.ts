@@ -1,6 +1,8 @@
 import { useState } from 'react'
 
 const MAX_LENGTH = 9
+const MAX_VALUE = 999999999
+const ERROR = 'ERROR'
 export type Operator = '+' | '-' | '*'
 
 function compute (a: number, b: number, op: Operator): number {
@@ -9,13 +11,25 @@ function compute (a: number, b: number, op: Operator): number {
   return a * b
 }
 
+function formatResult (n: number): string {
+  if (n < 0 || n > MAX_VALUE) return ERROR
+  return String(n)
+}
+
 export function useCalculator () {
   const [display, setDisplay] = useState('0')
   const [accumulator, setAccumulator] = useState<number | null>(null)
   const [operator, setOperator] = useState<Operator | null>(null)
   const [waiting, setWaiting] = useState(false)
 
+  const reset = () => {
+    setAccumulator(null)
+    setOperator(null)
+    setWaiting(false)
+  }
+
   const pressDigit = (digit: string) => {
+    if (display === ERROR) return
     if (waiting) {
       setDisplay(digit)
       setWaiting(false)
@@ -29,22 +43,25 @@ export function useCalculator () {
   }
 
   const pressOperator = (op: Operator) => {
+    if (display === ERROR) return
     const current = Number(display)
-    if (accumulator === null || waiting) {
-      setAccumulator(current)
-    } else if (operator) {
+    if (accumulator !== null && operator !== null && !waiting) {
       const result = compute(accumulator, current, operator)
+      const formatted = formatResult(result)
+      setDisplay(formatted)
+      if (formatted === ERROR) return reset()
       setAccumulator(result)
-      setDisplay(String(result))
+    } else {
+      setAccumulator(current)
     }
     setOperator(op)
     setWaiting(true)
   }
 
   const pressEquals = () => {
-    if (accumulator === null || operator === null) return
+    if (display === ERROR || accumulator === null || operator === null) return
     const result = compute(accumulator, Number(display), operator)
-    setDisplay(String(result))
+    setDisplay(formatResult(result))
     setAccumulator(null)
     setOperator(null)
     setWaiting(true)
