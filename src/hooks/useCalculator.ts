@@ -13,7 +13,13 @@ function compute (a: number, b: number, op: Operator): number {
 
 function formatResult (n: number): string {
   if (n < 0 || n > MAX_VALUE) return ERROR
-  return String(n)
+  const cleaned = Number(n.toPrecision(12))
+  const str = String(cleaned)
+  if (str.length <= MAX_LENGTH) return str
+  if (!str.includes('.')) return ERROR
+  const intLen = str.indexOf('.')
+  if (intLen >= MAX_LENGTH) return ERROR
+  return str.slice(0, MAX_LENGTH)
 }
 
 export function useCalculator () {
@@ -42,6 +48,20 @@ export function useCalculator () {
     })
   }
 
+  const pressDecimal = () => {
+    if (display === ERROR) return
+    if (waiting) {
+      setDisplay('0.')
+      setWaiting(false)
+      return
+    }
+    setDisplay(current => {
+      if (current.includes('.')) return current
+      if (current.length >= MAX_LENGTH) return current
+      return current + '.'
+    })
+  }
+
   const pressOperator = (op: Operator) => {
     if (display === ERROR) return
     const current = Number(display)
@@ -67,5 +87,5 @@ export function useCalculator () {
     setWaiting(true)
   }
 
-  return { display, pressDigit, pressOperator, pressEquals }
+  return { display, pressDigit, pressDecimal, pressOperator, pressEquals }
 }
