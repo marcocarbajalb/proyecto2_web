@@ -3,7 +3,7 @@ import type { KeypadProps } from './Keypad.types'
 import type { Operator } from '../hooks/useCalculator'
 
 const DIGITS = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0']
-const OPS: Operator[] = ['+', '-', '*', '/']
+const OPS: Operator[] = ['+', '-', '*', '/', '%']
 
 export default function Keypad (p: KeypadProps) {
   return (
