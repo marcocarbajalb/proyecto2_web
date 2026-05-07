@@ -64,6 +64,15 @@ export function useCalculator () {
     })
   }
 
+  const pressNegate = () => {
+    if (display === ERROR || display === '0') return
+    setDisplay(current => {
+      if (current.startsWith('-')) return current.slice(1)
+      if (current.length >= MAX_LENGTH) return current
+      return '-' + current
+    })
+  }
+
   const pressOperator = (op: Operator) => {
     if (display === ERROR) return
     const current = Number(display)
@@ -89,5 +98,5 @@ export function useCalculator () {
     setWaiting(true)
   }
 
-  return { display, pressDigit, pressDecimal, pressOperator, pressEquals }
+  return { display, pressDigit, pressDecimal, pressNegate, pressOperator, pressEquals }
 }

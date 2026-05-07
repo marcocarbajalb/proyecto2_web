@@ -3,15 +3,13 @@ import Keypad from './Keypad'
 import { useCalculator } from '../hooks/useCalculator'
 
 function Calculator () {
-  const calc = useCalculator()
+  const c = useCalculator()
   return (
     <div className='calculator'>
-      <Display value={calc.display} />
+      <Display value={c.display} />
       <Keypad
-        onDigit={calc.pressDigit}
-        onDecimal={calc.pressDecimal}
-        onOperator={calc.pressOperator}
-        onEquals={calc.pressEquals}
+        onDigit={c.pressDigit} onDecimal={c.pressDecimal} onNegate={c.pressNegate}
+        onOperator={c.pressOperator} onEquals={c.pressEquals}
       />
     </div>
   )

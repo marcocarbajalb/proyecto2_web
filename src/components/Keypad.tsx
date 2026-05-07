@@ -10,6 +10,7 @@ export default function Keypad (p: KeypadProps) {
     <div className='keypad'>
       {DIGITS.map(d => <Button key={d} label={d} onClick={() => p.onDigit(d)} />)}
       <Button label='.' variant='special' onClick={p.onDecimal} />
+      <Button label='+/-' variant='special' onClick={p.onNegate} />
       {OPS.map(o => <Button key={o} label={o} variant='operation' onClick={() => p.onOperator(o)} />)}
       <Button label='=' variant='equals' onClick={p.onEquals} />
     </div>
