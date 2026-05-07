@@ -3,16 +3,17 @@ import { useState } from 'react'
 const MAX_LENGTH = 9
 const MAX_VALUE = 999999999
 const ERROR = 'ERROR'
-export type Operator = '+' | '-' | '*'
+export type Operator = '+' | '-' | '*' | '/'
 
 function compute (a: number, b: number, op: Operator): number {
   if (op === '+') return a + b
   if (op === '-') return a - b
-  return a * b
+  if (op === '*') return a * b
+  return a / b
 }
 
 function formatResult (n: number): string {
-  if (n < 0 || n > MAX_VALUE) return ERROR
+  if (!isFinite(n) || n < 0 || n > MAX_VALUE) return ERROR
   const cleaned = Number(n.toPrecision(12))
   const str = String(cleaned)
   if (str.length <= MAX_LENGTH) return str
