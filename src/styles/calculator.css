@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #1a1a1c 0%, #0d0d0f 100%);
+}
+
+main {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.calculator {
+  background: #3a3a3c;
+  border-radius: 22px;
+  padding: 28px 24px 32px;
+  width: 320px;
+  box-shadow:
+    inset 0 -3px 0 #2a2a2c,
+    inset 0 2px 0 #4a4a4c,
+    0 12px 30px rgba(0, 0, 0, 0.6),
+    0 4px 8px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.calculator::before {
+  content: 'CASIO';
+  display: block;
+  font-weight: 600;
+  font-size: 16px;
+  color: #d8d8da;
+  letter-spacing: 1.5px;
+  margin-bottom: 14px;
+}
+
+.calculator::after {
+  content: 'LAB-8 • MARCO CARBAJAL';
+  position: absolute;
+  top: 32px;
+  right: 28px;
+  font-size: 8px;
+  color: #888888;
+  letter-spacing: 1.2px;
+}
+
+.display {
+  background: #a8b89e;
+  border-radius: 6px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+  border: 1px solid #1f1f22;
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.08);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 38px;
+  color: #1c2218;
+  text-align: right;
+  letter-spacing: 2px;
+  line-height: 1;
+  min-height: 38px;
+  overflow: hidden;
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 9px;
+}
+
+.button {
+  border: none;
+  border-radius: 6px;
+  padding: 14px 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.05s ease, box-shadow 0.05s ease;
+  user-select: none;
+}
+
+.button--number {
+  background: #1f1f22;
+  color: #e8e8ea;
+  box-shadow: inset 0 -3px 0 #0a0a0c;
+}
+
+.button--special {
+  background: #52525a;
+  color: #e8e8ea;
+  box-shadow: inset 0 -3px 0 #38383e;
+  font-size: 13px;
+}
+
+.button--operation {
+  background: #d4843a;
+  color: #ffffff;
+  box-shadow: inset 0 -3px 0 #8a4f1a;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.button--equals {
+  background: #e8a838;
+  color: #2a1f0a;
+  box-shadow: inset 0 -3px 0 #a06a1a;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.button--wide {
+  grid-column: span 3;
+}
+
+.button:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.button:focus-visible {
+  outline: 2px solid #e8a838;
+  outline-offset: 2px;
+}

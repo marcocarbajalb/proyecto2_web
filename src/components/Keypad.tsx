@@ -1,17 +1,19 @@
 import Button from './Button'
 import type { KeypadProps } from './Keypad.types'
-import type { Operator } from '../hooks/useCalculator'
-
-const DIGITS = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0']
-const OPS: Operator[] = ['+', '-', '*', '/', '%']
+import { digit, oper } from './Keypad.helpers'
 
 export default function Keypad (p: KeypadProps) {
+  const D = digit(p.onDigit)
+  const O = oper(p.onOperator)
   return (
     <div className='keypad'>
-      {DIGITS.map(d => <Button key={d} label={d} onClick={() => p.onDigit(d)} />)}
+      <Button label='±' variant='special' onClick={p.onNegate} />
       <Button label='.' variant='special' onClick={p.onDecimal} />
-      <Button label='+/-' variant='special' onClick={p.onNegate} />
-      {OPS.map(o => <Button key={o} label={o} variant='operation' onClick={() => p.onOperator(o)} />)}
+      {O('%', '%')}{O('÷', '/')}
+      {D('7')}{D('8')}{D('9')}{O('×', '*')}
+      {D('4')}{D('5')}{D('6')}{O('−', '-')}
+      {D('1')}{D('2')}{D('3')}{O('+', '+')}
+      <Button label='0' wide onClick={() => p.onDigit('0')} />
       <Button label='=' variant='equals' onClick={p.onEquals} />
     </div>
   )
