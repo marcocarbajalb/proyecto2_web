@@ -21,7 +21,7 @@ function formatResult (n: number): string {
   if (!str.includes('.')) return ERROR
   const intLen = str.indexOf('.')
   if (intLen >= MAX_LENGTH) return ERROR
-  return str.slice(0, MAX_LENGTH)
+  return str.slice(0, MAX_LENGTH).replace(/\.$/, '')
 }
 
 export function useCalculator () {
