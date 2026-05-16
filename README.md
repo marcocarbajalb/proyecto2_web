@@ -1,10 +1,8 @@
-# **PROYECTO 2:** Calculadora
+# **Proyecto 2:** Calculadora
 
 Calculadora simple estilo Casio retro, construida con componentes atómicos y un hook que centraliza toda la lógica de operaciones.
 
 > Sistemas y tecnologías web - S40 | Marco Carbajal (23025)
-
-![CI](https://github.com/TU_USUARIO/TU_REPO/actions/workflows/ci.yml/badge.svg)
 
 ## Stack
 
