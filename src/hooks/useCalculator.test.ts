@@ -59,3 +59,93 @@ describe('useCalculator - flujo del display', () => {
     expect(result.current.display.length).toBe(9)
   })
 })
+
+describe('useCalculator - decimales', () => {
+  it('permite ingresar números decimales', () => {
+    const { result } = renderHook(() => useCalculator())
+    act(() => result.current.pressDigit('1'))
+    act(() => result.current.pressDecimal())
+    act(() => result.current.pressDigit('5'))
+    expect(result.current.display).toBe('1.5')
+  })
+
+  it('ignora un segundo punto decimal en el mismo número', () => {
+    const { result } = renderHook(() => useCalculator())
+    act(() => result.current.pressDigit('1'))
+    act(() => result.current.pressDecimal())
+    act(() => result.current.pressDigit('5'))
+    act(() => result.current.pressDecimal())
+    act(() => result.current.pressDigit('7'))
+    expect(result.current.display).toBe('1.57')
+  })
+
+  it('al presionar punto sin haber ingresado dígitos muestra 0.', () => {
+    const { result } = renderHook(() => useCalculator())
+    act(() => result.current.pressDigit('5'))
+    act(() => result.current.pressOperator('+'))
+    act(() => result.current.pressDecimal())
+    expect(result.current.display).toBe('0.')
+  })
+
+  it('suma de decimales evita errores de punto flotante', () => {
+    const result = enterSequence('1.13', '-', '0.13')
+    expect(result.current.display).toBe('1')
+  })
+})
+
+describe('useCalculator - edge cases', () => {
+  it('ignora dígitos más allá del noveno caracter', () => {
+    const { result } = renderHook(() => useCalculator())
+    '1234567890'.split('').forEach(d => act(() => result.current.pressDigit(d)))
+    expect(result.current.display).toBe('123456789')
+    expect(result.current.display.length).toBe(9)
+  })
+
+  it('presionar = sin operación pendiente no cambia el display', () => {
+    const { result } = renderHook(() => useCalculator())
+    act(() => result.current.pressDigit('5'))
+    act(() => result.current.pressEquals())
+    expect(result.current.display).toBe('5')
+  })
+
+  it('en estado ERROR los botones siguientes son ignorados', () => {
+    const { result } = renderHook(() => useCalculator())
+    act(() => result.current.pressDigit('5'))
+    act(() => result.current.pressOperator('-'))
+    act(() => result.current.pressDigit('9'))
+    act(() => result.current.pressEquals())
+    expect(result.current.display).toBe('ERROR')
+    act(() => result.current.pressDigit('1'))
+    expect(result.current.display).toBe('ERROR')
+    act(() => result.current.pressOperator('+'))
+    expect(result.current.display).toBe('ERROR')
+  })
+
+  it('cuatro operaciones consecutivas calculan resultados intermedios', () => {
+    const { result } = renderHook(() => useCalculator())
+    act(() => result.current.pressDigit('1'))
+    act(() => result.current.pressOperator('+'))
+    act(() => result.current.pressDigit('2'))
+    act(() => result.current.pressOperator('+'))
+    act(() => result.current.pressDigit('3'))
+    act(() => result.current.pressOperator('+'))
+    act(() => result.current.pressDigit('4'))
+    act(() => result.current.pressEquals())
+    expect(result.current.display).toBe('10')
+  })
+
+  it('+/- alterna el signo del display', () => {
+    const { result } = renderHook(() => useCalculator())
+    act(() => result.current.pressDigit('5'))
+    act(() => result.current.pressNegate())
+    expect(result.current.display).toBe('-5')
+    act(() => result.current.pressNegate())
+    expect(result.current.display).toBe('5')
+  })
+
+  it('+/- no convierte 0 en -0', () => {
+    const { result } = renderHook(() => useCalculator())
+    act(() => result.current.pressNegate())
+    expect(result.current.display).toBe('0')
+  })
+})
