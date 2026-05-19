@@ -1,16 +1,18 @@
 # **Proyecto 2:** Calculadora
 
-Calculadora simple estilo Casio retro, construida con componentes atómicos y un hook que centraliza toda la lógica de operaciones.
+Sistemas y tecnologías web - S40
+> Marco Carbajal (23025)
 
-> Sistemas y tecnologías web - S40 | Marco Carbajal (23025)
+Calculadora simple estilo Casio retro, construida con componentes atómicos y un hook custom que centraliza toda la lógica de operaciones.
 
 ## Stack
 
 - **Bun** como package manager y runtime
 - **Vite + React 18 + TypeScript** para la app
-- **Vitest + Testing Library** para tests
-- **Storybook 8** para historias de componentes
+- **Vitest + Testing Library + vitest-axe** para tests (incluye pruebas de accesibilidad)
+- **Storybook 8** con interactions, controls y play functions
 - **ESLint** (`neostandard`) con reglas custom para sin punto y coma y máximo 120 caracteres por línea
+- **GitHub Actions** para CI automático en cada push
 
 ## Instalación
 
@@ -22,13 +24,39 @@ bun install
 
 ```bash
 bun run dev               # servidor de desarrollo (http://localhost:5173)
-bun run build             # build de producción
+bun run build             # build de producción → dist/
 bun run preview           # servir el build localmente
 bun run test              # correr la suite de tests una vez
+bun run test:watch        # tests en modo watch
 bun run lint              # eslint sobre src/**/*.{js,jsx,ts,tsx}
 bun run storybook         # storybook interactivo (http://localhost:6006)
-bun run build-storybook   # storybook estático
+bun run build-storybook   # storybook estático → storybook-static/
 ```
+
+## Cómo correr la aplicación
+
+```bash
+bun install
+bun run dev
+```
+
+Y abrir http://localhost:5173 en el navegador.
+
+## Cómo correr los tests
+
+```bash
+bun run test
+```
+
+La suite incluye 24 tests cubriendo lógica del hook, integración de componentes y accesibilidad.
+
+## Cómo correr Storybook
+
+```bash
+bun run storybook
+```
+
+Y abrir http://localhost:6006 en el navegador.
 
 ## Funcionalidades
 
@@ -43,26 +71,26 @@ bun run build-storybook   # storybook estático
 
 - El display soporta máximo 9 caracteres. El punto y el signo negativo cuentan como caracter.
 - Cualquier dígito ingresado más allá del noveno se ignora.
-- Si una operación produce un resultado negativo (por ejemplo `5 − 9`) se muestra `ERROR`.
+- Si una operación produce un resultado negativo se muestra `ERROR`.
 - Si una operación produce un resultado mayor a `999999999` se muestra `ERROR`.
 - División entre cero produce `ERROR`.
-- Al encadenar operaciones (`1 + 2 + 3 + ...`) cada operador muestra el resultado intermedio.
-- Después de presionar un operador, el siguiente dígito reemplaza el display en lugar de concatenarse.
+- Al encadenar operaciones cada operador muestra el resultado intermedio.
+- Después de presionar un operador, el siguiente dígito reemplaza el display.
 - Una vez en estado `ERROR`, los botones se ignoran hasta recargar.
 
-## Estructura del proyecto
+## Arquitectura
 
 ```
 src/
 ├── components/
-│   ├── Button.tsx               # botón
-│   ├── Calculator.tsx           # integra hook, display y keypad
+│   ├── Button.tsx               # botón presentacional con variantes
+│   ├── Calculator.tsx           # cabeza, integra hook + display + keypad
 │   ├── Display.tsx              # pantalla LCD
 │   ├── Keypad.tsx               # grilla de botones
 │   ├── Keypad.helpers.tsx       # factorías de Button para el keypad
 │   ├── Keypad.types.ts          # tipos del Keypad
 │   ├── *.stories.tsx            # historias de Storybook
-│   └── *.test.tsx               # tests de integración
+│   └── *.test.tsx               # tests de componente y accesibilidad
 ├── hooks/
 │   ├── useCalculator.ts         # toda la lógica de la calculadora
 │   └── useCalculator.test.ts    # tests del hook
@@ -73,42 +101,68 @@ src/
 └── test-setup.ts
 ```
 
+### Decisiones de diseño
+
+- **Lógica centralizada en `useCalculator`:** los componentes son puramente presentacionales y todos están por debajo de 20 líneas. Esto facilita testing (el hook se testea aislado) y mantenimiento.
+- **`formatResult` aplica reglas en orden:** chequea `isFinite`, rango, redondeo de errores de punto flotante con `toPrecision(12)`, y trunca cuando excede 9 caracteres preservando el punto decimal.
+- **El Keypad mapea símbolos visuales a operadores lógicos:** el usuario ve `×` pero el hook recibe `'*'`, manteniendo el código interno limpio.
+
 ## Tests
 
-Cinco tests no triviales:
+24 tests distribuidos en tres categorías:
 
-1. **Encadenado de operadores** — verifica que `1 + 2 +` muestra `3` antes del `=`
-2. **ERROR por negativo** — `5 − 9 =` debe dar `ERROR`
-3. **Truncado de división** — `22 / 7 =` debe dar exactamente `3.1428571` (9 caracteres)
-4. **Limpieza al presionar operador** — después de un operador, el siguiente dígito reemplaza el display
-5. **Integración end-to-end** — render del Calculator completo, clicks reales, `8 × 7 =` debe mostrar `56`
+### Tests del hook (`useCalculator.test.ts`)
 
-```bash
-bun run test
-```
+- **Operaciones básicas** (9 casos parametrizados con `it.each`): suma, resta, multiplicación, división, módulo, truncado de decimales, ERROR por negativo, overflow, división entre cero
+- **Flujo del display** (3 tests): resultados intermedios al encadenar, reemplazo después de operador, límite de 9 caracteres
+- **Decimales** (4 tests): ingreso básico, segundo punto ignorado, punto después de operador, errores de punto flotante
+- **Edge cases** (7 tests): límite de 9 dígitos, `=` sin operación, persistencia de ERROR, operaciones consecutivas, toggle de `±`, no `-0`
+
+### Tests de integración (`Calculator.test.tsx`)
+
+- Click en botones reales actualiza el display y calcula correctamente
+
+### Tests de accesibilidad (`Calculator.a11y.test.tsx`)
+
+- Verifica con `vitest-axe` que el Calculator no tiene violaciones de WCAG
 
 ## Historias de Storybook
 
-Cinco historias distribuidas en dos componentes atómicos:
+13 historias distribuidas en cuatro componentes:
 
-- **Button**: Number, Operation, Equals
-- **Display**: Default, Error
+- **Button** (7): Playground con controls interactivos, Number, Operation, Equals, Special, Wide, AllVariants
+- **Display** (2): Default, Error
+- **Keypad** (1): Default con todos los callbacks registrados como actions
+- **Calculator** (3): Default, Demo de `22 ÷ 7` con play function, Demo de Estado ERROR con play function
 
-```bash
-bun run storybook
-```
+Las demos del Calculator se animan solas al abrirlas y verifican el resultado con `expect`.
 
 ## Linting
 
-ESLint con `neostandard` más dos reglas custom requeridas por el laboratorio:
+ESLint con `neostandard` (sucesor de `eslint-config-standard` para flat config) más dos reglas custom requeridas por el proyecto:
 
-- `@stylistic/semi: never` — prohíbe punto y coma
-- `max-len: { code: 120 }` — máximo 120 caracteres por línea
+- `@stylistic/semi: never` - prohíbe punto y coma
+- `max-len: { code: 120 }` - máximo 120 caracteres por línea
 
 ```bash
 bun run lint
 ```
 
-## Retos implementados
- 
-Todos los retos de la rúbrica fueron implementados.
+## Accesibilidad
+
+- `role='status'` y `aria-live='polite'` en el display para que los lectores de pantalla anuncien los cambios
+- `aria-label` en botones de símbolos (`±`, `+`, `−`, `×`, `÷`, `%`) con descripción en español
+- Navegación por teclado con Tab y activación con Space/Enter (comportamiento nativo de `<button>`)
+- `:focus-visible` con outline mostaza para feedback visual del foco
+- Test automático con `vitest-axe` que detecta violaciones de WCAG en cada corrida del CI
+
+## CI
+
+El workflow de GitHub Actions (`.github/workflows/ci.yml`) corre en cada push y pull request a `main`. Ejecuta en orden:
+
+1. Instalación con `bun install --frozen-lockfile`
+2. Lint
+3. Tests
+4. Build de producción
+
+Si cualquier paso falla, el commit queda marcado con un check rojo.
