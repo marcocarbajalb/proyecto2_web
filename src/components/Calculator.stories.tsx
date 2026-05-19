@@ -18,7 +18,7 @@ export const Demo22Sobre7: Story = {
     const c = within(canvasElement)
     await userEvent.click(c.getByRole('button', { name: '2' }))
     await userEvent.click(c.getByRole('button', { name: '2' }))
-    await userEvent.click(c.getByRole('button', { name: '÷' }))
+    await userEvent.click(c.getByRole('button', { name: 'dividir' }))
     await userEvent.click(c.getByRole('button', { name: '7' }))
     await userEvent.click(c.getByRole('button', { name: '=' }))
     await expect(c.getByRole('status')).toHaveTextContent('3.1428571')
@@ -30,7 +30,7 @@ export const DemoError: Story = {
   play: async ({ canvasElement }) => {
     const c = within(canvasElement)
     await userEvent.click(c.getByRole('button', { name: '5' }))
-    await userEvent.click(c.getByRole('button', { name: '−' }))
+    await userEvent.click(c.getByRole('button', { name: 'restar' }))
     await userEvent.click(c.getByRole('button', { name: '9' }))
     await userEvent.click(c.getByRole('button', { name: '=' }))
     await expect(c.getByRole('status')).toHaveTextContent('ERROR')

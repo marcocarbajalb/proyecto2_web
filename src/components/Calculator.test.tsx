@@ -8,7 +8,7 @@ describe('Calculator (integración)', () => {
     const user = userEvent.setup()
     render(<Calculator />)
     await user.click(screen.getByRole('button', { name: '8' }))
-    await user.click(screen.getByRole('button', { name: '×' }))
+    await user.click(screen.getByRole('button', { name: 'multiplicar' }))
     await user.click(screen.getByRole('button', { name: '7' }))
     await user.click(screen.getByRole('button', { name: '=' }))
     expect(screen.getByRole('status')).toHaveTextContent('56')
