@@ -42,7 +42,7 @@ main {
 }
 
 .calculator::after {
-  content: 'LAB-8 • MARCO CARBAJAL';
+  content: 'PROYECTO 2 - MARCO CARBAJAL';
   position: absolute;
   top: 32px;
   right: 28px;
